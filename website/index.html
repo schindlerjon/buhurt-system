@@ -8,6 +8,7 @@
     <title>Buhurt Management System</title>
 
     <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="leaflet/leaflet.css" />
 
 </head>
 
@@ -17,11 +18,33 @@
 
     <p>Welcome to Lesson 1.</p>
 
-    <button id="helloButton">
+    <button id="helloButton">Click Me</button>
+	
+	<h2>Team Locations</h2>
+	
+	<section id="auth-section">
+    <div id="logged-out-view">
+        <h2>Login / Register</h2>
+        <input type="email" id="email-input" placeholder="Email" />
+        <input type="password" id="password-input" placeholder="Password" />
+        <button id="login-btn">Log In</button>
+        <button id="register-btn">Register</button>
+        <p id="auth-message"></p>
+    </div>
 
-        Click Me
+    <div id="logged-in-view" style="display: none;">
+        <p>Logged in as <span id="user-email"></span> (<span id="user-role"></span>)</p>
+        <button id="logout-btn">Log Out</button>
+    </div>
+</section>
+	
 
-    </button>
+    <div id="map"></div>
+
+    <!-- Leaflet's JS library - must load BEFORE script.js, since script.js uses it -->
+    <script src="leaflet/leaflet.js"></script>
+
+
 
     <script src="script.js"></script>
 
