@@ -8,9 +8,6 @@ const app = express();
 
 const PORT = 4000;
 
-app.use(express.static(path.join(__dirname, "../website")));
-
-
 app.use(express.json()); // lets Express read JSON sent from the browser (needed for login/register forms)
 
 app.use(session({
@@ -126,6 +123,45 @@ app.get("/api/teams", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch teams" });
   }
 });
+
+
+// Get all events (public - anyone can view the calendar)
+app.get("/api/events", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT events.*, teams.name AS team_name FROM events LEFT JOIN teams ON events.team_id = teams.id ORDER BY start_time"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch events" });
+  }
+});
+
+// Create a new event (admin only, for now)
+app.post("/api/events", requireRole("admin"), async (req, res) => {
+  const { title, description, location, start_time, end_time, team_id } = req.body;
+
+  if (!title || !start_time) {
+    return res.status(400).json({ error: "Title and start time are required" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO events (title, description, location, start_time, end_time, team_id, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [title, description, location, start_time, end_time || null, team_id || null, req.session.user.id]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create event" });
+  }
+});
+
+
+
+
 
 app.listen(PORT, () => {
 
