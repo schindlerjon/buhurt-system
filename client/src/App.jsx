@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import Home from "./pages/Home";
 import MapPage from "./pages/MapPage";
 import CalendarPage from "./pages/CalendarPage";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/calendar" element={<CalendarPage />} />
+		<Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   );

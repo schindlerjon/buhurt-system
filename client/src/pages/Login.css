@@ -1,0 +1,29 @@
+.auth-page {
+  max-width: 360px;
+  margin: var(--space-xl) auto;
+}
+
+.auth-page input {
+  display: block;
+  width: 100%;
+  background: var(--color-steel);
+  border: 1px solid var(--color-mist);
+  color: var(--color-plate);
+  padding: 10px 12px;
+  margin-bottom: var(--space-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  border-radius: 2px;
+}
+
+.auth-page input:focus {
+  outline: none;
+  border-color: var(--color-ember);
+}
+
+.auth-page .auth-message {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-gold);
+  margin-top: var(--space-sm);
+}

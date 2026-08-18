@@ -1,0 +1,16 @@
+.leaflet-popup-content-wrapper {
+  background: var(--color-steel);
+  color: var(--color-plate);
+  border-radius: 2px;
+  font-family: var(--font-body);
+}
+
+.leaflet-popup-content strong {
+  font-family: var(--font-heading);
+  color: var(--color-plate);
+  font-size: 15px;
+}
+
+.leaflet-popup-tip {
+  background: var(--color-steel);
+}

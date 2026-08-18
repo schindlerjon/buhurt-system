@@ -1,0 +1,24 @@
+.fc {
+  --fc-border-color: var(--color-mist);
+  --fc-page-bg-color: var(--color-iron);
+  --fc-neutral-bg-color: var(--color-steel);
+  --fc-today-bg-color: rgba(181, 72, 42, 0.15);
+  --fc-button-bg-color: var(--color-steel);
+  --fc-button-border-color: var(--color-mist);
+  --fc-button-hover-bg-color: var(--color-ember);
+  --fc-button-active-bg-color: var(--color-ember);
+  font-family: var(--font-body);
+  color: var(--color-plate);
+}
+
+.fc .fc-toolbar-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.fc-event {
+  background: var(--color-ember);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}

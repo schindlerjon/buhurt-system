@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import { useAuth } from "../context/AuthContext";
+import AddEventForm from "../components/AddEventForm";
+import "./CalendarPage.css";
 
 function CalendarPage() {
   const [events, setEvents] = useState([]);
+  const { user } = useAuth();
 
-  useEffect(() => {
+  function loadEvents() {
     fetch("/api/events")
       .then((response) => response.json())
       .then((data) => {
@@ -17,11 +21,18 @@ function CalendarPage() {
         setEvents(formatted);
       })
       .catch((error) => console.error("Failed to load events:", error));
+  }
+
+  useEffect(() => {
+    loadEvents();
   }, []);
 
   return (
     <div>
       <h1>Events Calendar</h1>
+
+      {user?.role === "admin" && <AddEventForm onEventCreated={loadEvents} />}
+
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"

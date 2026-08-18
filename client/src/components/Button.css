@@ -1,0 +1,16 @@
+.btn-ember {
+  background: var(--color-ember);
+  color: var(--color-iron);
+  border: none;
+  padding: 10px 20px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 92% 100%, 0 100%);
+}
+
+.btn-ember:hover {
+  opacity: 0.9;
+}
