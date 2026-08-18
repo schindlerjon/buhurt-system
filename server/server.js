@@ -40,6 +40,48 @@ function requireRole(...allowedRoles) {
 
 // -- PATHS/ROUTES -- 
 
+app.get("/hello", (req, res) => { res.send("Hello from the server!"); });
+app.get("/about", (req, res) => { res.send("Welcome to the Buhurt Management System API"); });
+
+
+// ----------------------------
+// -- START REGISTRATION API
+// ----------------------------
+
+// List all users (admin only)
+app.get("/api/users", requireRole("admin"), async (req, res) => {
+  try {
+    const result = await pool.query("SELECT id, email, role, team_id FROM users ORDER BY email");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// Change a user's role (admin only)
+app.put("/api/users/:id/role", requireRole("admin"), async (req, res) => {
+  const { role } = req.body;
+
+  if (!["member", "captain", "admin"].includes(role)) {
+    return res.status(400).json({ error: "Invalid role" });
+  }
+
+  try {
+    const result = await pool.query(
+      "UPDATE users SET role = $1 WHERE id = $2 RETURNING id, email, role",
+      [role, req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update role" });
+  }
+});
+
 // Register a new user (defaults to role "member")
 app.post("/api/register", async (req, res) => {
   const { email, password } = req.body;
@@ -102,17 +144,17 @@ app.get("/api/me", (req, res) => {
   res.json({ user: req.session.user || null });
 });
 
-app.get("/hello", (req, res) => {
 
-    res.send("Hello from the server!");
+// ----------------------------
+// -- END REGISTRATION API
+// ----------------------------
 
-});
 
-app.get("/about", (req, res) => {
 
-    res.send("Welcome to the Buhurt Management System API");
 
-});
+// ----------------------------
+// -- START TEAMS API
+// ----------------------------
 
 app.get("/api/teams", async (req, res) => {
   try {
@@ -123,7 +165,6 @@ app.get("/api/teams", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch teams" });
   }
 });
-
 
 // Get all events (public - anyone can view the calendar)
 app.get("/api/events", async (req, res) => {
@@ -159,7 +200,67 @@ app.post("/api/events", requireRole("admin"), async (req, res) => {
   }
 });
 
+//  --- ACCESS CONTROL (ADMIN) - TEAMS API
+// Create a team (admin only)
+app.post("/api/teams", requireRole("admin"), async (req, res) => {
+  const { name, city, state, latitude, longitude } = req.body;
 
+  if (!name || latitude == null || longitude == null) {
+    return res.status(400).json({ error: "Name, latitude, and longitude are required" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO teams (name, city, state, latitude, longitude)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [name, city, state, latitude, longitude]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to create team" });
+  }
+});
+
+// Update a team (admin only)
+app.put("/api/teams/:id", requireRole("admin"), async (req, res) => {
+  const { name, city, state, latitude, longitude } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE teams SET name = $1, city = $2, state = $3, latitude = $4, longitude = $5
+       WHERE id = $6 RETURNING *`,
+      [name, city, state, latitude, longitude, req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update team" });
+  }
+});
+
+// Delete a team (admin only)
+app.delete("/api/teams/:id", requireRole("admin"), async (req, res) => {
+  try {
+    const result = await pool.query("DELETE FROM teams WHERE id = $1 RETURNING id", [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Team not found" });
+    }
+    res.json({ message: "Team deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete team" });
+  }
+});
+
+
+
+// ----------------------------
+// -- END TEAMS API
+// ----------------------------
 
 
 
